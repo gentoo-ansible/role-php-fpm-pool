@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: Jakub Jirutka
+  company: CTU in Prague
+  description: A role to configure php-fpm pool.
+  license: MIT
+  min_ansible_version: 1.8
+  platforms:
+    - name: Gentoo
+  categories:
+    - system
+    - web
+
+allow_duplicates: yes
+dependencies: []

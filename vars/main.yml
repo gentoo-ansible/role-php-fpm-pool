@@ -1,0 +1,14 @@
+---
+# Hash of default overrides that will be merged with {{php_fpm_ini_overrides}}.
+_ini_overrides_defaults:
+  error_log: "/{{ php_fpm_logs_dir | relpath(__prefix) }}/php.error.log"
+  sys_temp_dir: "{{ __temp_dir }}"
+  upload_tmp_dir: "{{ __temp_dir }}"
+  session.save_path: "{{ __temp_dir }}"
+  upload_max_filesize: "{{ '%sM'|format(php_fpm_upload_max_size) if php_fpm_upload_max_size else '_NONE_' }}"
+  post_max_size: "{{ '%sM'|format(php_fpm_upload_max_size) if php_fpm_upload_max_size else '_NONE_' }}"
+  file_uploads: "{{ true if php_fpm_upload_max_size else '_NONE_' }}"
+  memory_limit: "{{ php_fpm_upload_max_size if php_fpm_upload_max_size and php_fpm_upload_max_size > php_fpm_memory_limit else php_fpm_memory_limit }}M"
+
+__prefix: "{{ php_fpm_chroot_dir | default('/', true) }}"
+__temp_dir: "{{ '/' + php_fpm_temp_dir | relpath(__prefix) if php_fpm_temp_dir else '_NONE_' }}"

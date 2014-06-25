@@ -1,0 +1,110 @@
+---
+# Name of the php-fom pool (required).
+php_fpm_pool_name:
+
+# Whether the user and group should be created.
+php_fpm_create_account: true
+
+# User to run php-fpm worker processes.
+php_fpm_user: nobody
+
+# Group to run php-fpm worker processes.
+php_fpm_group: "{{ php_fpm_user }}"
+
+# Home directory of the user being created.
+php_fpm_home_dir: "{{ '/dev/null' if php_fpm_chroot_dir in ['', '/'] else php_fpm_chroot_dir }}"
+
+# Path of the directory to store logs.
+# Note: When chroot is enabled, it's NOT needed to be inside the chroot.
+php_fpm_logs_dir: "{{ php_fpm_chroot_dir }}{{ '/var/log/' + php_fpm_pool_name if php_fpm_chroot_dir in ['', '/'] else '/log' }}"
+
+# Path of the chroot directory; empty or '/' to not use chroot.
+php_fpm_chroot_dir: ''
+
+# FPM log level
+# Allowed values: alert, error, warning, notice, debug
+php_fpm_log_level: warning
+
+# Hash with path and permissions of the FastCGI socket. Possible keys:
+#   path:   default is /run/{{php_fpm_pool_name}}/fastcgi.sock
+#   owner:  default is {{php_fpm_user}}
+#   group:  default is {{php_fpm_group}}
+#   mode:   default is 0666
+# Note: Ignored when {{php_fpm_port}} > 0.
+php_fpm_socket: {}
+
+# Port number the php-fpm will listen on. If 0 or less, then unix socket is
+# used instead of TCP/IP.
+php_fpm_port: 0
+
+# The network address to bind to, or empty to bind all interfaces.
+php_fpm_bind_ip: 127.0.0.1
+
+# Hash of process manager parameters.
+#
+#  mode   Process manager mode (required). Choose how the process manager will
+#         control the number of child processes. Possible values are:
+#         : static   - a fixed number of child processes.
+#         : dynamic  - the number of child processes are set dynamically.
+#         : ondemand - no children are created at startup; children will be
+#                      forked when new requests will connect. [default]
+# All modes:
+#    max_children        The number of child processes to be created when mode
+#                        is 'static', or the maximum number of processes when
+#                        mode is 'dynamic' or 'ondemand'. This value sets the
+#                        limit on the number of simultaneous requests that will
+#                        be served. Default is 10.
+# Dynamic mode:
+#    start_servers       The number of children processes created on startup.
+#                        Set to '-1' to adjust this parameter based on:
+#                        min_spare_servers + (max_spare_servers - min_spare_servers) / 2
+#    min_spare_servers   The desired minimum number of children processes in
+#                        'idle' state. If less than this number, then some
+#                        children will be created. Default is 1.
+#    max_spare_servers   The desired maximum number of children processes in
+#                        'idle' state. If greater than this number, then some
+#                        children will be killed. Default is 6.
+# On-demand mode:
+#    process_idle_timeout   The number of seconds after which an idle process
+#                           will be killed.
+php_fpm_pm:
+  mode: ondemand
+
+# The URI to view the FPM status page, or empty to disable.
+# Note: The value must start with a leading slash (/). The value can be
+# anything, but it may not be a good idea to use the .php extension or it may
+# conflict with a real PHP file.
+php_fpm_status_path: ''
+
+# The ping URI to call the monitoring page of FPM, or empty to disable.
+# Note: The value must start with a leading slash (/). The value can be
+# anything, but it may not be a good idea to use the .php extension or it may
+# conflict with a real PHP file.
+php_fpm_ping_path: '/ping'
+
+# Hash of environment variables to pass to the worker processes.
+php_fpm_env: {}
+
+# Override some php.ini settings.
+php_fpm_ini_overrides: {}
+
+# Path of the directory to store temporary files, incl. sessions and uploads.
+# This variable is a shortcut to override sys_temp_dir, upload_tmp_dir and
+# session.save_path from the main php.ini. If you don't want to override these
+# parameters at all, then set it to empty (default).
+# Note: When chroot is enabled then it MUST be inside the chroot directory (but
+# specify full path here).
+php_fpm_temp_dir: ''
+
+# Maximum allowed size for uploaded files and POST data that PHP will accept
+# (in megabytes).
+# This variable is a shortcut to override both 'upload_max_filesize' and
+# 'post_max_size' parameters from the main php.ini to the same value. If you
+# don't want to override these parameters at all, then set it to empty.
+php_fpm_upload_max_size: ''
+
+# Maximum amount of memory a script may consume (in megabytes). This variable
+# overrides 'memory_limit' from the main php.ini. When
+# {{php_fpm_upload_max_size}} is greater than this value, then it's
+# automatically raised to {{php_fpm_upload_max_size}}.
+php_fpm_memory_limit: 64

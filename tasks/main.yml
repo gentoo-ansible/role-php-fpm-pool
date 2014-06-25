@@ -1,0 +1,42 @@
+---
+- name: "create group {{ php_fpm_group }}"
+  group: >
+    name={{ php_fpm_group }}
+    system=yes
+  when: php_fpm_create_account
+  tags: [accounts, fpm]
+
+- name: "create user {{ php_fpm_user }}"
+  user: >
+    name={{ php_fpm_user }}
+    group={{ php_fpm_group }}
+    system=yes
+    shell=/sbin/nologin
+    home={{ php_fpm_home_dir }}
+    createhome=no
+  when: php_fpm_create_account
+  tags: [accounts, fpm]
+
+- name: "prepare logs directory for {{ php_fpm_pool_name }}"
+  file: >
+    state=directory
+    path={{ php_fpm_logs_dir }}
+    owner={{ php_fpm_user }}
+    group={{ php_fpm_group }}
+    mode=0755
+  when: php_fpm_create_account
+  tags: fpm
+
+- name: "configure pool {{ php_fpm_pool_name }}"
+  template: >
+    src=pool.ini.j2
+    dest=/etc/php/fpm/pools/{{ php_fpm_pool_name }}.ini
+    owner=root group=root mode=0644
+  tags: [config, fpm]
+
+- name: "link runscript for {{ php_fpm_pool_name }}"
+  file: >
+    state=link
+    src=/etc/init.d/php-fpm
+    dest=/etc/init.d/{{ php_fpm_pool_name }}
+  tags: [config, fpm]
