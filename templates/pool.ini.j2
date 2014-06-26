@@ -161,7 +161,7 @@ slowlog = {{ php_fpm_logs_dir }}/php-fpm.slow.log
 ;       possible. However, all PHP paths will be relative to the chroot
 ;       (error_log, sessions.save_path, ...).
 ; Default Value: not set
-{% if php_fpm_chroot_dir in ['', '/'] %}
+{% if php_fpm_chroot_dir not in ['', '/'] %}
 chroot = {{ php_fpm_chroot_dir }}
 {% endif %}
 
