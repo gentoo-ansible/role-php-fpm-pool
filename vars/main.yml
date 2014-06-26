@@ -2,6 +2,7 @@
 # Hash of default overrides that will be merged with {{php_fpm_ini_overrides}}.
 _ini_overrides_defaults:
   error_log: "/{{ php_fpm_logs_dir | relpath(__prefix) }}/php.error.log"
+  opcache.error_log: "/{{ php_fpm_logs_dir | relpath(__prefix) }}/php.error.log"
   sys_temp_dir: "{{ __temp_dir }}"
   upload_tmp_dir: "{{ __temp_dir }}"
   session.save_path: "{{ __temp_dir }}"
