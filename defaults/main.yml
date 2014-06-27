@@ -12,14 +12,18 @@ php_fpm_user: nobody
 php_fpm_group: "{{ php_fpm_user }}"
 
 # Home directory of the user being created.
-php_fpm_home_dir: "{{ '/dev/null' if php_fpm_chroot_dir in ['', '/'] else php_fpm_chroot_dir }}"
+php_fpm_home_dir: "{{ php_fpm_chroot_dir if php_fpm_chroot_enabled | bool else '/dev/null' }}"
 
 # Path of the directory to store logs.
 # Note: When chroot is enabled, it's NOT needed to be inside the chroot.
-php_fpm_logs_dir: "{{ php_fpm_chroot_dir }}{{ '/var/log/' + php_fpm_pool_name if php_fpm_chroot_dir in ['', '/'] else '/log' }}"
+php_fpm_logs_dir: "{{ php_fpm_chroot_dir + '/log' if php_fpm_chroot_enabled | bool else '/var/log/' + php_fpm_pool_name }}"
 
-# Path of the chroot directory; empty or '/' to not use chroot.
+# Path of the chroot directory.
+# Note: This variable is ignored when {{php_fpm_chroot_enabled}} is set to false.
 php_fpm_chroot_dir: ''
+
+# Whether to enable chroot.
+php_fpm_chroot_enabled: "{{ php_fpm_chroot_dir not in [none, '', '/'] }}"
 
 # FPM log level
 # Allowed values: alert, error, warning, notice, debug

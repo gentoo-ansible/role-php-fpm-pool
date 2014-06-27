@@ -1,4 +1,19 @@
 ; {{ ansible_managed }}
+{# This must be here instead of vars due to some weird bug with resolving variables passed to filters. #}
+{% set _prefix = php_fpm_chroot_dir if php_fpm_chroot_enabled | bool else '/' %}
+{% set _temp_dir = '/' + php_fpm_temp_dir | relpath(_prefix) if php_fpm_temp_dir else '_NONE_' %}
+{% set _ini_overrides = {
+    'error_log': '/' + php_fpm_logs_dir | relpath(_prefix) + '/php.error.log',
+    'opcache.error_log': '/' + php_fpm_logs_dir | relpath(_prefix) + '/php.error.log',
+    'sys_temp_dir': _temp_dir,
+    'upload_tmp_dir': _temp_dir,
+    'session.save_path': _temp_dir,
+    'upload_max_filesize': "%sM"|format(php_fpm_upload_max_size) if php_fpm_upload_max_size else '_NONE_',
+    'post_max_size': "%sM"|format(php_fpm_upload_max_size) if php_fpm_upload_max_size else '_NONE_',
+    'file_uploads': true if php_fpm_upload_max_size else '_NONE_',
+    'memory_limit': "%sM" | format(php_fpm_upload_max_size if php_fpm_upload_max_size and php_fpm_upload_max_size > php_fpm_memory_limit else php_fpm_memory_limit)
+    } | hash_merge(php_fpm_ini_overrides)
+%}
 
 [global]
 ; Error log file
@@ -161,7 +176,7 @@ slowlog = {{ php_fpm_logs_dir }}/php-fpm.slow.log
 ;       possible. However, all PHP paths will be relative to the chroot
 ;       (error_log, sessions.save_path, ...).
 ; Default Value: not set
-{% if php_fpm_chroot_dir not in ['', '/'] %}
+{% if php_fpm_chroot_enabled | bool %}
 chroot = {{ php_fpm_chroot_dir }}
 {% endif %}
 
@@ -195,7 +210,6 @@ env[{{ k }}] = {{ v }}
 ;
 ; Note: path INI options can be relative and will be expanded with the prefix
 ; (pool, global or /usr/lib/php5.3)
-{% set _ini_overrides = _ini_overrides_defaults | hash_merge(php_fpm_ini_overrides) %}
 {% for k, v in _ini_overrides.items() if v != '_NONE_' %}
 {% if v|string|lower in ['true', 'false', 'yes', 'no', 'on', 'off'] %}
 php_admin_flag[{{ k }}] = {{ v|string|lower }}
