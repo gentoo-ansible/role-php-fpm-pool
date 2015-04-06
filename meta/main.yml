@@ -12,4 +12,5 @@ galaxy_info:
     - web
 
 allow_duplicates: yes
-dependencies: []
+dependencies:
+  - php-fpm
