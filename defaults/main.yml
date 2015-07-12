@@ -112,3 +112,8 @@ php_fpm_upload_max_size: ''
 # {{php_fpm_upload_max_size}} is greater than this value, then it's
 # automatically raised to {{php_fpm_upload_max_size}}.
 php_fpm_memory_limit: 64
+
+# List of functions to disable for security reasons.
+# Note: This will not overwrite previously defined php.ini values, but will
+# append the new value instead.
+php_fpm_disable_functions: [exec, passthru, shell_exec, system, proc_open, popen, curl_exec, curl_multi_exec, show_source]

@@ -11,7 +11,8 @@
     'upload_max_filesize': "%sM"|format(php_fpm_upload_max_size) if php_fpm_upload_max_size else '_NONE_',
     'post_max_size': "%sM"|format(php_fpm_upload_max_size) if php_fpm_upload_max_size else '_NONE_',
     'file_uploads': true if php_fpm_upload_max_size else '_NONE_',
-    'memory_limit': "%sM" | format(php_fpm_upload_max_size if php_fpm_upload_max_size and php_fpm_upload_max_size > php_fpm_memory_limit else php_fpm_memory_limit)
+    'memory_limit': "%sM" | format(php_fpm_upload_max_size if php_fpm_upload_max_size and php_fpm_upload_max_size > php_fpm_memory_limit else php_fpm_memory_limit),
+    'disable_functions': php_fpm_disable_functions | join(',')
     } | hash_merge(php_fpm_ini_overrides)
 %}
 
